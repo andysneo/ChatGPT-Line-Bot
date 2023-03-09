@@ -47,15 +47,17 @@ def handle_text_message(event):
     user_id = event.source.user_id
     text = event.message.text
     logger.info(f'{user_id}: {text}')
-    if text.startswith('/imagine'):
-        response = dalle.generate(text[8:].strip())
+    if text.startswith('/img'):
+        response = dalle.generate(text[4:].strip())
         msg = ImageSendMessage(
             original_content_url=response,
             preview_image_url=response
         )
-    else:
-        response = chatgpt.get_response(user_id, text)
+    elif text.startswith('/say'):
+        response = chatgpt.get_response(user_id, text[4:].strip())
         msg = TextSendMessage(text=response)
+    else :
+        return
 
     line_bot_api.reply_message(
         event.reply_token,
